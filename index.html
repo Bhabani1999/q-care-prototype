@@ -873,6 +873,9 @@ svg { flex-shrink: 0; }
 .report-focus-shell .report-focus-card h3 { margin: 0; }
 .report-focus-card h3 button { display: block; width: 100%; font: inherit; letter-spacing: inherit; line-height: inherit; border: 0; padding: 0; background: transparent; color: var(--ink); text-align: left; }
 .report-focus-card h3 button::after { content: ''; position: absolute; inset: 0; border-radius: var(--chat-card-radius); }
+.report-focus-shell .report-focus-card h3 { padding-right: 48px; }
+.report-focus-card .focus-card-open { position: absolute; z-index: 1; top: var(--focus-card-inset); right: var(--focus-card-inset); width: 36px; height: 36px; }
+.focus-card-open .ui-icon { transform: rotate(90deg); }
 .report-focus-shell .report-focus-card > p { margin: 11px 0 0; color: var(--muted); font-family: var(--body); font-size: var(--text-body-size); line-height: 1.35; }
 .report-focus-shell .report-tags { margin-top: 18px; gap: 7px; }
 :root { --compact-label-radius: 9px; }
@@ -2308,7 +2311,7 @@ svg { flex-shrink: 0; }
     filter: 'all', markerCategory: null, healthCategory: 'all', healthFilter: 'all', carePlanTab: 'supplements', chatMessages: [], questionReplies: [], questionsStarted: false, doctorReplies: [], timer: null, editing: false,
     slot: null, bookedSlot: null, visitConsent: false, chatModal: false,
     uploading: false, readingStage: 0, readingWords: 0, questionsComplete: false, analysisReady: false,
-    planFlow: null, focusArea: 'thyroid', careScope: 'thyroid', markerOrigin: null, markerTrail: [], selectedMarker: null, savedCare: [], testSlot: null, testRequests: {}, focusNotes: {},
+    planFlow: null, focusArea: 'thyroid', exploredFocusAreas: [], careScope: 'thyroid', markerOrigin: null, markerTrail: [], selectedMarker: null, savedCare: [], testSlot: null, testRequests: {}, focusNotes: {},
   };
   const people = { mum: { name: 'Meera', role: 'your mum', age: 60, orb: '' }, dad: { name: 'Rajan', role: 'Dad', age: 65, orb: 'dad' }, me: { name: 'Priya', role: 'Me', age: 35, orb: 'me' } };
   const initialContext = structuredClone(state);
@@ -2894,7 +2897,7 @@ return `<div class="consultation-details">${intro('', 'Doctor consultation', 'A 
 
   function reportFocusCard(key) {
     const area = reportAreas[key];
-    return `<article class="report-focus-shell ${area.tone} ${key === 'thyroid' ? '' : 'without-attention'}"><div class="report-focus-card"><h3 class="heading-small"><button type="button" data-action="focus-area:${key}">${area.cardTitle}</button></h3><p>${key === 'vitamins' && b12Known() ? 'You’ve shared that she takes B12 supplements. Let’s use that context to build the next steps into her care plan.' : area.summary}</p>${areaTags(['sugar', 'vitamins'].includes(key) ? { ...area, tags: [['Care plan', 'green']] } : area)}</div>${key === 'thyroid' ? attentionTag() : ''}</article>`;
+    return `<article class="report-focus-shell ${area.tone} ${key === 'thyroid' ? '' : 'without-attention'}"><div class="report-focus-card"><button class="icon-button focus-card-open" type="button" data-action="focus-area:${key}" aria-label="Explore ${escape(area.title || area.cardTitle)}" title="Explore this focus area">${icon('send', 18)}</button><h3 class="heading-small"><button type="button" data-action="focus-area:${key}">${area.cardTitle}</button></h3><p>${key === 'vitamins' && b12Known() ? 'You’ve shared that she takes B12 supplements. Let’s use that context to build the next steps into her care plan.' : area.summary}</p>${areaTags(['sugar', 'vitamins'].includes(key) ? { ...area, tags: [['Care plan', 'green']] } : area)}</div>${key === 'thyroid' ? attentionTag() : ''}</article>`;
   }
 
   function renderReportFocus() {
@@ -3083,16 +3086,19 @@ return `<div class="consultation-details">${intro('', 'Doctor consultation', 'A 
     if (state.planFlow && chatScreens.has(state.screen)) {
       const phase = state.planFlow.phase;
       if (phase === 'doctor-confirm') return { text: 'Bring a doctor into the chat', selector: '[data-action="plan-consultation-confirm"]' };
-      if (phase === 'test-day') return { text: 'Choose a collection date', selector: '.schedule-date-grid' };
-      if (phase === 'test-time') return { text: 'Choose a time that works', selector: '.schedule-date-grid' };
-      if (phase === 'care-choice') return { text: 'Choose how to start her plan', selector: '.care-plan-options' };
+      if (phase === 'test-day') return { text: 'Choose a collection date', selector: '.schedule-date-grid button' };
+      if (phase === 'test-time') return { text: 'Choose a time that works', selector: '.schedule-date-grid button' };
+      if (phase === 'care-choice') return { text: 'Choose how to start her plan', selector: '.care-plan-options button' };
       return { text: 'The doctor’s overview is here', selector: '[data-doctor-review]' };
     }
-    if (state.screen === 'triage') return { text: 'Answer what you know', selector: '[data-question-panel]' };
+    if (state.screen === 'triage') return { text: 'Answer what you know', selector: '[data-question-panel] .context-option' };
     if (state.screen === 'reading' || state.screen === 'chat' && state.attached && !state.analysisReady) return { text: 'Add a little context', selector: '[data-action="start-triage"]' };
     if (state.screen === 'ready' || state.screen === 'chat' && state.analysisReady) return { text: 'Open her report review', selector: '[data-action="go:reassurance"]' };
     if (state.screen === 'reassurance') return { text: 'See what needs attention', selector: '[data-action="go:focus"]' };
-    if (state.screen === 'focus') return { text: 'See her next steps', selector: '[data-action="report-care:all"]' };
+    if (state.screen === 'focus') return state.exploredFocusAreas.includes('thyroid')
+      ? { text: 'See her next steps', selector: '[data-action="report-care:all"]' }
+      : { text: 'Look inside her thyroid focus area', selector: '.focus-card-open[data-action="focus-area:thyroid"]' };
+    if (['thyroid', 'report-area'].includes(state.screen)) return { text: 'Read through this area, then return', selector: '[data-report-footer] [data-action="back"]' };
     if (state.screen === 'report-care') return { text: 'Keep the next steps in this chat', selector: '[data-action="start-plan"]' };
     if (state.screen === 'chat' && !state.attached) return { text: 'Add Mum’s report', selector: '[data-action="attach"]' };
     return { text: 'Return to the journey when ready', selector: '[data-back]:not([hidden]), [data-family-switch]:not([hidden])' };
@@ -3113,25 +3119,31 @@ return `<div class="consultation-details">${intro('', 'Doctor consultation', 'A 
     const visibleTop = Math.max(rect.top, phone.top + 80);
     const visibleBottom = Math.min(rect.bottom, phone.bottom - 40);
     if (visibleBottom <= visibleTop) return;
-    const gutter = phone.left;
+    const onRight = rect.left + rect.width / 2 > phone.left + phone.width / 2 + 10;
+    const gutter = onRight ? window.innerWidth - phone.right : phone.left;
     const width = Math.min(190, gutter - 42);
     if (width < 110) return;
     const y = (visibleTop + visibleBottom) / 2;
+    const hit = document.elementFromPoint(rect.left + rect.width / 2, y);
+    if (!hit || !target.contains(hit)) return;
     note.style.width = `${width}px`;
-    note.style.left = `${Math.max(20, phone.left - width - 65)}px`;
+    note.style.left = `${onRight ? Math.min(window.innerWidth - width - 20, phone.right + 65) : Math.max(20, phone.left - width - 65)}px`;
     note.style.top = `${Math.max(100, Math.min(window.innerHeight - 100, y - 85))}px`;
     document.querySelector('[data-guide-copy]').textContent = step.text;
     note.hidden = false;
     arrow.toggleAttribute('hidden', false);
     const n = note.getBoundingClientRect();
-    const sx = n.right - 12, sy = n.bottom + 8, ex = phone.left + 12, ey = y;
-    document.querySelector('[data-guide-line]').setAttribute('d', `M ${sx} ${sy} C ${sx + 12} ${sy + 36}, ${ex - 40} ${ey + 25}, ${ex} ${ey}`);
-    document.querySelector('[data-guide-tip]').setAttribute('d', `M ${ex - 13} ${ey - 3} L ${ex} ${ey} L ${ex - 6} ${ey + 12}`);
+    const direction = onRight ? -1 : 1;
+    const sx = onRight ? n.left + 12 : n.right - 12;
+    const sy = n.bottom + 8, ex = onRight ? rect.right + 8 : rect.left - 8, ey = y;
+    document.querySelector('[data-guide-line]').setAttribute('d', `M ${sx} ${sy} C ${sx + direction * 24} ${sy + 32}, ${ex - direction * 45} ${ey}, ${ex} ${ey}`);
+    document.querySelector('[data-guide-tip]').setAttribute('d', `M ${ex - direction * 12} ${ey - 6} L ${ex} ${ey} L ${ex - direction * 12} ${ey + 6}`);
   }
 
   function go(screen, remember = true) {
     if (!renderers[screen]) return;
     if (activePerson !== 'mum' && !['design-system', 'home', 'profile', 'record', 'plan', 'chat'].includes(screen)) return;
+    if (['thyroid', 'report-area'].includes(screen) && !state.exploredFocusAreas.includes(state.focusArea)) state.exploredFocusAreas.push(state.focusArea);
     if (chatScreens.has(screen)) state.chatModal = true;
     else if (reportScreens.has(screen)) state.chatModal = true;
     else if (rootScreens.has(screen) || screen === 'design-system') state.chatModal = false;
