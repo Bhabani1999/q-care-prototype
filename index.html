@@ -873,8 +873,9 @@ svg { flex-shrink: 0; }
 .report-focus-shell .report-focus-card h3 { margin: 0; }
 .report-focus-card h3 button { display: block; width: 100%; font: inherit; letter-spacing: inherit; line-height: inherit; border: 0; padding: 0; background: transparent; color: var(--ink); text-align: left; }
 .report-focus-card h3 button::after { content: ''; position: absolute; inset: 0; border-radius: var(--chat-card-radius); }
-.report-focus-shell .report-focus-card h3 { padding-right: 48px; }
-.report-focus-card .focus-card-open { position: absolute; z-index: 1; top: var(--focus-card-inset); right: var(--focus-card-inset); width: 36px; height: 36px; }
+.report-focus-shell .report-focus-card h3 { padding-right: 32px; }
+.report-focus-card .focus-card-open { position: absolute; z-index: 1; top: var(--focus-card-inset); right: var(--focus-card-inset); width: 24px; height: calc(var(--heading-sm-size) * 1.25); padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--ink); }
+.focus-card-open:focus-visible { outline: 2px solid var(--q-accent-strong); outline-offset: 4px; }
 .focus-card-open .ui-icon { transform: rotate(90deg); }
 .report-focus-shell .report-focus-card > p { margin: 11px 0 0; color: var(--muted); font-family: var(--body); font-size: var(--text-body-size); line-height: 1.35; }
 .report-focus-shell .report-tags { margin-top: 18px; gap: 7px; }
