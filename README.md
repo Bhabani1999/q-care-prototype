@@ -14,7 +14,9 @@ The entry point is `index.html`. It is self-contained: app code, fonts, photogra
 
 ## Main Journey
 
-Choose Mum, open Ask Q, attach the demonstration report, answer the context questions, open the report review, explore the focus areas, arrange next steps and bring a doctor into the conversation.
+Choose Mum, open Ask Q, attach the demonstration report, answer the context questions, open the report review, explore the care goals, arrange next steps and bring a doctor into the conversation.
+
+Care Plan opens with Goals: revisit the stacked care-goal cards, see completed and pending actions, and ask Q in the same conversation. Supplements, Nutrition and Lifestyle retain their empty states.
 
 All AI messages, doctor responses, appointments and service availability are scripted demonstrations. Nothing is submitted to a healthcare service. The health score is illustrative. This is not medical advice.
 
