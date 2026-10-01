@@ -2123,6 +2123,8 @@ svg { flex-shrink: 0; }
 .chat-task-card.schedule-card .care-plan-options { margin-top: calc(var(--space-xl) - var(--context-gap)); }
 
 .clinician-review .bubble > section > p + p { margin-top: var(--group-gap); }
+.flow-end-caption { display: flex; align-items: center; gap: var(--space-md); color: var(--muted); text-align: center; font: 500 var(--text-meta-size)/1.35 var(--display); }
+.flow-end-caption::before, .flow-end-caption::after { content: ''; height: 1px; flex: 1; background: var(--divider); }
 
 </style>
 </head>
@@ -2544,7 +2546,7 @@ const visible = selected;
     if (!queue.length) { finish(); return; }
 
     // Keep the action panel and completion mark behind the pending replies.
-    const held = [...content.querySelectorAll('.q-response-end, [data-chat-task-dock], .text-chat-action')]
+    const held = [...content.querySelectorAll('.q-response-end, [data-chat-task-dock], .text-chat-action, [data-flow-end]')]
       .map(element => ({ element, hidden: element.hidden, inert: element.inert }));
     const submit = composer.querySelector('[type="submit"]');
     const wasDisabled = submit.disabled;
@@ -2756,8 +2758,9 @@ const visible = selected;
 
   function renderPlanConversation() {
     const flow = state.planFlow;
-    return `<div class="thread">${reportConversation()}<div class="plan-followup" data-plan-flow>${flow.events.map(entry => entry.type === 'doctor-review' ? doctorReview() : message(escape(entry.text), entry.from)).join('')}</div></div>`;
+    return `<div class="thread">${reportConversation()}<div class="plan-followup" data-plan-flow>${flow.events.map(entry => entry.type === 'doctor-review' ? doctorReview() : message(escape(entry.text), entry.from)).join('')}</div>${flow.phase === 'complete' ? flowEndCaption() : ''}</div>`;
   }
+  const flowEndCaption = () => '<p class="flow-end-caption" data-flow-end role="status">End of flow</p>';
   function refreshPlan() { go('chat', false); }
   function handlePlanText(text) {
     const flow = state.planFlow;
@@ -2813,7 +2816,7 @@ return `<div class="consultation-details">${intro('', 'Doctor consultation', 'A 
 
   function renderDoctor() {
     if (state.planFlow?.phase === 'complete') return renderPlanConversation();
-    return `<div class="thread">${state.planFlow ? reportConversation() : ''}${doctorReview()}${state.doctorReplies.map(text => message(escape(text), 'user')).join('')}</div>`;
+    return `<div class="thread">${state.planFlow ? reportConversation() : ''}${doctorReview()}${state.doctorReplies.map(text => message(escape(text), 'user')).join('')}${flowEndCaption()}</div>`;
   }
 
   function renderBooking() {
@@ -3090,8 +3093,9 @@ return `<div class="consultation-details">${intro('', 'Doctor consultation', 'A 
       if (phase === 'test-day') return { text: 'Choose a collection date', selector: '.schedule-date-grid button' };
       if (phase === 'test-time') return { text: 'Choose a time that works', selector: '.schedule-date-grid button' };
       if (phase === 'care-choice') return { text: 'Choose how to start her plan', selector: '.care-plan-options button' };
-      return { text: 'The doctor’s overview is here', selector: '[data-doctor-review]' };
+      return { text: 'End of flow', selector: '[data-flow-end]', terminal: true };
     }
+    if (state.screen === 'doctor') return { text: 'End of flow', selector: '[data-flow-end]', terminal: true };
     if (state.screen === 'triage') return { text: 'Answer what you know', selector: '[data-question-panel] .context-option' };
     if (state.screen === 'reading' || state.screen === 'chat' && state.attached && !state.analysisReady) return { text: 'Add a little context', selector: '[data-action="start-triage"]' };
     if (state.screen === 'ready' || state.screen === 'chat' && state.analysisReady) return { text: 'Open her report review', selector: '[data-action="go:reassurance"]' };
@@ -3132,7 +3136,7 @@ return `<div class="consultation-details">${intro('', 'Doctor consultation', 'A 
     note.style.top = `${Math.max(100, Math.min(window.innerHeight - 100, y - 85))}px`;
     document.querySelector('[data-guide-copy]').textContent = step.text;
     note.hidden = false;
-    arrow.toggleAttribute('hidden', false);
+    arrow.toggleAttribute('hidden', Boolean(step.terminal));
     const n = note.getBoundingClientRect();
     const direction = onRight ? -1 : 1;
     const sx = onRight ? n.left + 12 : n.right - 12;
