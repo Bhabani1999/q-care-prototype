@@ -492,7 +492,7 @@ svg { flex-shrink: 0; }
   --welcome-base: #09080d;
   background: radial-gradient(ellipse 57% 41% at 73% 3%, var(--welcome-highlight) 0%, transparent 82%), radial-gradient(ellipse 100% 49% at 18% 3%, var(--welcome-blue) 0%, transparent 85%), radial-gradient(ellipse 54% 37% at 97% 27%, var(--welcome-edge, #396cdf95) 0%, transparent 88%), var(--welcome-base);
 }
-.choosing-person::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: url('gradient-noise.svg') repeat; opacity: .14; mix-blend-mode: soft-light; pointer-events: none; z-index: 0; }
+.choosing-person::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiB2aWV3Qm94PSIwIDAgMTgwIDE4MCI+PGZpbHRlciBpZD0iZ3JhaW4iPjxmZVR1cmJ1bGVuY2UgdHlwZT0iZnJhY3RhbE5vaXNlIiBiYXNlRnJlcXVlbmN5PSIuODUiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48ZmVDb2xvck1hdHJpeCB0eXBlPSJzYXR1cmF0ZSIgdmFsdWVzPSIwIi8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI2dyYWluKSIgb3BhY2l0eT0iLjU1Ii8+PC9zdmc+Cg==') repeat; opacity: .14; mix-blend-mode: soft-light; pointer-events: none; z-index: 0; }
 .choosing-person [data-app-surface] { position: relative; z-index: 1; }
 .choosing-person .statusbar, .choosing-person .app-head { color: var(--entry-heading); }
 .choosing-person .app-head [data-header-more] { background: #fff; color: var(--ink); }
@@ -577,7 +577,7 @@ svg { flex-shrink: 0; }
 .ds-spacing span { height: 8px; background: var(--lavender); border-radius: 3px; }
 .ds-spacing small { color: var(--muted); font-size: 10px; }
 .ds-mesh { position: relative; height: 150px; overflow: hidden; border-radius: 20px; display: flex; align-items: flex-end; padding: 16px; color: white; background: radial-gradient(ellipse at 73% 0%, #dce4ff, transparent 70%), radial-gradient(ellipse at 18% 0%, #2862e8, transparent 80%), #09080d; }
-.ds-mesh::before { content: ''; position: absolute; inset: 0; background: url('gradient-noise.svg'); opacity: .14; mix-blend-mode: soft-light; pointer-events: none; }
+.ds-mesh::before { content: ''; position: absolute; inset: 0; background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiB2aWV3Qm94PSIwIDAgMTgwIDE4MCI+PGZpbHRlciBpZD0iZ3JhaW4iPjxmZVR1cmJ1bGVuY2UgdHlwZT0iZnJhY3RhbE5vaXNlIiBiYXNlRnJlcXVlbmN5PSIuODUiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48ZmVDb2xvck1hdHJpeCB0eXBlPSJzYXR1cmF0ZSIgdmFsdWVzPSIwIi8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI2dyYWluKSIgb3BhY2l0eT0iLjU1Ii8+PC9zdmc+Cg=='); opacity: .14; mix-blend-mode: soft-light; pointer-events: none; }
 .ds-mesh > span { position: relative; font-size: 11px; }
 
 /* User replies follow the body family with a tighter conversation rhythm. */
@@ -3174,6 +3174,7 @@ return `<div class="consultation-details">${intro('', 'Doctor consultation', 'A 
     reportFooter.classList.toggle('with-back', Boolean(reportFooter.querySelector('.report-footer-back')));
     content.firstElementChild.classList.toggle('report-marker-page', state.screen === 'markers');
     content.firstElementChild.classList.toggle('health-profile-page', state.screen === 'record');
+    if (designSystem) content.firstElementChild.insertAdjacentHTML('afterbegin', '<section class="ds-section"><h2>Presentation shell</h2><div class="presentation-modes" style="align-self:flex-start" role="group" aria-label="Presentation mode specimen"><button type="button" aria-pressed="true" disabled>Guided</button><button type="button" aria-pressed="false" disabled>Free Explore</button></div><p class="ds-caption">External presentation controls use Neue Montreal Medium, compact neutral surfaces and the existing icon family. Guided adds a single handwritten cue outside the phone after replies finish streaming. Back restores an interaction snapshot; Reset clears the journey. The desktop phone scales uniformly to fit the available height. Small viewports show only the app.</p></section>');
     const head = document.querySelector('[data-head]');
     head.dataset.home = state.screen === 'home';
     const doctorConversation = state.screen === 'doctor' || state.planFlow?.phase === 'complete' && chatScreens.has(state.screen);
