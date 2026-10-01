@@ -17,3 +17,7 @@ Inter Regular 400 and Medium 500 and JetBrains Mono Regular 400 were downloaded 
 ## Updated dotted-body illustrations
 
 `body-female.webp` and `body-male.webp` are quality-94 WebP derivatives of the user-supplied `Female Bust 2.png` and `Male-bust 1.png`. Full source dimensions and originals are retained. Shared contained framing, multiply blending and a lower-edge alpha mask blend their white backgrounds into each surface. The published artifact embeds both derivatives.
+
+## User-supplied Neue Montreal Semibold
+
+The user-supplied `PPNeueMontreal-Semibold.otf` is converted to WOFF2 and embedded as Neue Montreal 600 in `index.html`. Its source folder is named `PP Neue Montreal - Free for Personal Use v3.0`; conversion does not imply additional licence rights. Original font files remain in the local working project and are not distributed separately here.
