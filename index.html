@@ -3208,7 +3208,7 @@ return `<div class="consultation-details">${intro('', 'Doctor consultation', 'A 
       title.innerHTML = `<b>${nestedTitle}</b>`;
     }
     head.dataset.conversation = String(isConversation);
-    if (isConversation) title.innerHTML = '<b>Ask Q</b>';
+    if (isConversation) title.innerHTML = `<span role="img" aria-label="Q">${qLogo(false, 26)}</span>`;
     if (state.screen === 'record') title.innerHTML = '<b>Health Profile</b>';
     if (state.screen === 'plan') title.innerHTML = '<b>Care Plan</b>';
     const more = document.querySelector('[data-header-more]');
